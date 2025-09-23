@@ -10,6 +10,8 @@ class MainWindow(qtw.QMainWindow()):
 
         self.setCentralWidget(self.central_widget)
 
+        self.currentMode = ''
+
 def initialize(window):
     selection_page = qtw.QHBoxLayout()
     selection_widget = qtw.QWidget()
@@ -17,7 +19,7 @@ def initialize(window):
     selection_page.addStretch(1)
     selelction_buttons = qtw.QVBoxLayout()
     selection_buttons.addStretch(3)
-    student_button = qtw.QButton('Student login')    #login page
+    student_button = qtw.QButton('Student login')    #selection page
     teacher_button = qtw.QButton('Teacher login')
     selection_buttons.addWidget(student_button)
     selection_buttons.addStretch(1)
@@ -29,3 +31,42 @@ def initialize(window):
 
     login_page = qtw.QHBoxLayout()
     login_widget = qtw.QWidget()
+    login_widget.setLayout(login_page)
+    credentials_layout = qtw.QVBoxLayout()
+    user_id_layout = qtw.QHBoxLayout()
+    submit_layout = qtw.QHBoxLayout()
+    password_layout = qtw.QHBoxLayout()
+    user_id = qtw.QLineEdit()
+    password = qtw.QLineEdit()
+    user_id.setMinimumWidth(250)
+    password.setMinimumWidth(250)                              #login page
+    user_id_layout.addStretch(1)
+    user_id_layout.addWidget(qtw.QLabel('User ID: '))
+    user_id_layout.addWidget(user_id)
+    user_id_layout.addStretch(1)
+    password_layout.addStretch(1)
+    password_layout.addWidget(qtw.QLabel('Password:'))
+    password_layout.addwidget(password)
+    password_layout.addStretch(1)
+    create_new_button = qtw.QPushButton('Create new user')
+    submit_button = qtw.QPushButton('Submit')
+    submit_layout.addStretch(4)
+    submit_layout.addWidget(create_new_button)
+    submit_layout.addStretch(1)
+    submit_layout.addWidget(submit_button)
+    submit_layout.addStretch(4)
+    credentials_layout.addStretch(3)
+    credentials_layout.addLayout(user_id_layout)
+    credentials_layout.addStretch(1)
+    credentials_layout.addLayout(password_layout)
+    credentials_layout.addStretch(2)
+    credentials_layout.addLayout(submit_layout)
+    credentials_layout.addStretch(4)
+    login_page.addStretch(1)
+    login_page.addLayout(credentials_layout)
+    login_page.addStretch(1)
+    window.layout.addWidget(login_widget)
+
+def student_login(window):
+    window.currentMode = 's'
+    window.layout.setCurrentIndex(1)
