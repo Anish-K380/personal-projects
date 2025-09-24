@@ -15,6 +15,7 @@ class MainWindow(qtw.QMainWindow):
         initialize(self)
 
 def initialize(window):
+
     selection_page = qtw.QHBoxLayout()
     selection_widget = qtw.QWidget()
     selection_widget.setLayout(selection_page)
@@ -149,14 +150,18 @@ def initialize(window):
 
     loggedInWidget = qtw.QWidget()
     loggedInLayout = qtw.QVBoxLayout()
-    loggedInWidget.setLayout(loggedInLayout())
+    loggedInWidget.setLayout(loggedInLayout)
+    helloLayout = qtw.QHBoxLayout()
+    helloLayout.addStretch(1)
+    window.hello = qtw.QLabel('')
+    helloLayout.addWidget(window.hello)
     loggedTeacherLayout_ = qtw.QHBoxLayout()
     window.loggedTeacher = qtw.QWidget()
     loggedTeacherLayout = qtw.QHBoxLayout()
-    window.loggedTeacher.setLayout(loggedTeacherLayout())
+    window.loggedTeacher.setLayout(loggedTeacherLayout)
     loggedInLayout1 = qtw.QHBoxLayout()
     loggedInLayout2 = qtw.QHBoxLayout()
-    loggedInlayout3 = qtw.QHBoxLayout()
+    loggedInLayout3 = qtw.QHBoxLayout()
     loggedInLayout4 = qtw.QHBoxLayout()
     loggedTeacherLayout_.addStretch(1)
     loggedTeacherLayout_.addWidget(window.loggedTeacher)
@@ -166,9 +171,9 @@ def initialize(window):
     loggedTeacherLayout.addWidget(makeTestButton)
     loggedTeacherLayout.addStretch(1)
     loggedInLayout1.addStretch(1)
-    existingTest = qtw.QPushButton('')
-    loggedInLayout1.addWidget(existingTest)
-    logggedInLayout1.addStretch(1)
+    window.existingTest = qtw.QComboBox()
+    loggedInLayout1.addWidget(window.existingTest)
+    loggedInLayout1.addStretch(1)
     loggedInLayout2.addStretch(1)
     viewResults = qtw.QPushButton('View Results')
     loggedInLayout2.addWidget(viewResults)
@@ -179,8 +184,11 @@ def initialize(window):
     loggedInLayout3.addStretch(1)
     loggedInLayout4.addStretch(1)
     logout = qtw.QPushButton('Logout')
+    logout.clicked.connect(partial(homepage, window))
     loggedInLayout4.addWidget(logout)
     loggedInLayout4.addStretch(1)
+    loggedInLayout.addStretch(1)
+    loggedInLayout.addLayout(helloLayout)
     loggedInLayout.addStretch(3)
     loggedInLayout.addLayout(loggedTeacherLayout_)
     loggedInLayout.addLayout(loggedInLayout1)
@@ -206,20 +214,28 @@ def teacher_login(window):
     window.layout.setCurrentIndex(1)
 
 def refresh():
-    credentials.append({'Developer' : '8iJLVQAbHeVlQdyrDpiH'})
-    credentials.append({'Developer' : '8iJLVQAbHeVlQdyrDpiH'})
+    credentials.append({'Developer' : 'password'})
+    credentials.append({'Developer' : 'password'})
+    topics.append('Stars and Galaxies')
+    topics.append('topic 2')
 
 def login_submit(user_id_obj, password_obj, window):
     user_id = user_id_obj.text()
     password = password_obj.text()
     if user_id in credentials[window.currentMode]:
         if password == credentials[window.currentMode][user_id]:
+            user_id_obj.setText('')
+            password_obj.setText('')
             window.userID = user_id
             window.password = password
+            loggedInPage(window)
         else:
+            password_obj.setText('')
             window.login_error_text.setText('Invalid Password')
             window.login_error_text.show()
     else:
+        user_id_obj.setText('')
+        password_obj.setText('')
         window.login_error_text.setText('Invalid user ID')
         window.login_error_text.show()
 
@@ -237,8 +253,15 @@ def create_new_user(window):
     window.layout.setCurrentIndex(2)
 
 def loggedInPage(window):
-    if window.currentMode:show()
-    else:hide()
+    window.hello.setText('Hello ' + window.userID + '!')
+    window.existingTest.addItems(topics)
+    if window.currentMode:
+        window.loggedTeacher.show()
+        window.existingTest.setCurrentText('Alter test')
+    else:
+        window.loggedTeacher.hide()
+        window.existingTest.setCurrentText('Take test')
+    window.layout.setCurrentIndex(3)
 
 credentials = list()
 topics = list()
