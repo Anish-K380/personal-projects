@@ -65,6 +65,7 @@ def initialize(window):
     login_create_new_button = qtw.QPushButton('Create new user')
     login_submit_button = qtw.QPushButton('Submit')
     login_submit_button.clicked.connect(partial(login_submit, user_id, password, window))
+    login_create_new_button.clicked.connect(partial(create_new_user, window))
     login_submit_layout.addStretch(4)
     login_submit_layout.addWidget(login_create_new_button)
     login_submit_layout.addStretch(1)
@@ -85,7 +86,7 @@ def initialize(window):
     login_page.addStretch(1)
     window.layout.addWidget(login_widget)
 
-    user_widget = qtw,QWidget()
+    user_widget = qtw.QWidget()
     user_layout = qtw.QVBoxLayout()
     user_widget.setLayout(user_layout)
     user_return_layout = qtw.QHBoxLayout()
@@ -98,6 +99,7 @@ def initialize(window):
     window.userError = qtw.QLabel('')
     user_submit_layout = qtw.QHBoxLayout()
     window.userReturn = qtw.QPushButton('<=')
+    window.userReturn.clicked.connect(lambda : None)
     user_return_layout.addWidget(window.userReturn)
     user_return_layout.addStretch(1)
     window.text1 = qtw.QLabel('')
@@ -114,10 +116,10 @@ def initialize(window):
     text_box3_layout.addStretch(1)
     text_box1_layout.addWidget(window.text1)
     text_box2_layout.addWidget(window.text2)
-    text_box3_layout.addWidget(window.text3)
+    text_box3_layout.addWidget(window.text3)          #create new user and reset password
     text_box1_layout.addWidget(textBox1)
     text_box2_layout.addWidget(textBox2)
-    text_box3_layout.addwidget(textBox3)
+    text_box3_layout.addWidget(textBox3)
     text_box1_layout.addStretch(1)
     text_box2_layout.addStretch(1)
     text_box3_layout.addStretch(1)
@@ -131,18 +133,76 @@ def initialize(window):
     window.userSubmit = qtw.QPushButton('Submit')
     user_submit_layout.addWidget(window.userSubmit)
     user_submit_layout.addStretch(1)
-    user_widget.addLayout(
+    user_layout.addLayout(user_return_layout)
+    user_layout.addStretch(2)
+    user_layout.addLayout(text_box1_layout)
+    user_layout.addStretch(1)
+    user_layout.addLayout(text_box2_layout)
+    user_layout.addStretch(1)
+    user_layout.addLayout(text_box3_layout)
+    user_layout.addStretch(1)
+    user_layout.addWidget(window.teacherCodeWidget)
+    user_layout.addStretch(2)
+    user_layout.addLayout(user_submit_layout)
+    user_layout.addStretch(4)
+    window.layout.addWidget(user_widget)
+
+    loggedInWidget = qtw.QWidget()
+    loggedInLayout = qtw.QVBoxLayout()
+    loggedInWidget.setLayout(loggedInLayout())
+    loggedTeacherLayout_ = qtw.QHBoxLayout()
+    window.loggedTeacher = qtw.QWidget()
+    loggedTeacherLayout = qtw.QHBoxLayout()
+    window.loggedTeacher.setLayout(loggedTeacherLayout())
+    loggedInLayout1 = qtw.QHBoxLayout()
+    loggedInLayout2 = qtw.QHBoxLayout()
+    loggedInlayout3 = qtw.QHBoxLayout()
+    loggedInLayout4 = qtw.QHBoxLayout()
+    loggedTeacherLayout_.addStretch(1)
+    loggedTeacherLayout_.addWidget(window.loggedTeacher)
+    loggedTeacherLayout_.addStretch(1)
+    loggedTeacherLayout.addStretch(1)
+    makeTestButton = qtw.QPushButton('Make Test')
+    loggedTeacherLayout.addWidget(makeTestButton)
+    loggedTeacherLayout.addStretch(1)
+    loggedInLayout1.addStretch(1)
+    existingTest = qtw.QPushButton('')
+    loggedInLayout1.addWidget(existingTest)
+    logggedInLayout1.addStretch(1)
+    loggedInLayout2.addStretch(1)
+    viewResults = qtw.QPushButton('View Results')
+    loggedInLayout2.addWidget(viewResults)
+    loggedInLayout2.addStretch(1)
+    loggedInLayout3.addStretch(1)
+    changePassword = qtw.QPushButton('Change Password')
+    loggedInLayout3.addWidget(changePassword)
+    loggedInLayout3.addStretch(1)
+    loggedInLayout4.addStretch(1)
+    logout = qtw.QPushButton('Logout')
+    loggedInLayout4.addWidget(logout)
+    loggedInLayout4.addStretch(1)
+    loggedInLayout.addStretch(3)
+    loggedInLayout.addLayout(loggedTeacherLayout_)
+    loggedInLayout.addLayout(loggedInLayout1)
+    loggedInLayout.addStretch(1)
+    loggedInLayout.addLayout(loggedInLayout2)
+    loggedInLayout.addStretch(1)
+    loggedInLayout.addLayout(loggedInLayout3)
+    loggedInLayout.addStretch(2)
+    loggedInLayout.addLayout(loggedInLayout4)
+    loggedInLayout.addStretch(5)
+    window.layout.addWidget(loggedInWidget)
 
 homepage = lambda window : window.layout.setCurrentIndex(0)
 
 def student_login(window):
     window.login_error_text.hide()
-    window.currentMode = 0
+    window.currentMode = False
     window.layout.setCurrentIndex(1)
 
 def teacher_login(window):
     window.login_error_text.hide()
-    window.currentMode = 1
+    window.currentMode = True
     window.layout.setCurrentIndex(1)
 
 def refresh():
@@ -162,6 +222,23 @@ def login_submit(user_id_obj, password_obj, window):
     else:
         window.login_error_text.setText('Invalid user ID')
         window.login_error_text.show()
+
+def create_new_user(window):
+    window.userReturn.clicked.disconnect()
+    if window.currentMode:
+        window.teacherCodeWidget.show()
+        window.userReturn.clicked.connect(partial(teacher_login, window))
+    else:
+        window.teacherCodeWidget.hide()
+        window.userReturn.clicked.connect(partial(student_login, window))
+    window.text1.setText('Enter Username:  ')
+    window.text2.setText('Enter Password:  ')
+    window.text3.setText('Confirm Password:')
+    window.layout.setCurrentIndex(2)
+
+def loggedInPage(window):
+    if window.currentMode:show()
+    else:hide()
 
 credentials = list()
 topics = list()
