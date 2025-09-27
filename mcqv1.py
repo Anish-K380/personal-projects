@@ -227,7 +227,7 @@ def initialize(window):
     testSubmitLayout.addStretch(1)
     testContent.addStretch(2)
     testContent.addLayout(testSubmitLayout)
-    questionLayout = qtw.QStackedLayout()
+    window.questionLayout = qtw.QStackedLayout()
     window.questions = list()
     for i in range(10):
         tempWidget = qtw.QWidget()
@@ -238,7 +238,7 @@ def initialize(window):
         tempLayout.addWidget(window.questions[i])
         tempLayout.addStretch(1)
         tempWidget.setLayout(tempLayout)
-        questionLayout.addWidget(tempWidget)
+        window.questionLayout.addWidget(tempWidget)
     for i in range(10):
         tempWidget = qtw.QWidget()
         tempLayout = qtw.QHBoxLayout()
@@ -247,7 +247,38 @@ def initialize(window):
         tempLayout.addWidget(window.questions[i + 10])
         tempLayout.addStretch(1)
         tempWidget.setLayout(tempLayout)
-        questionLayout.addWidget(tempWidget)
+        window.questionLayout.addWidget(tempWidget)
+    testContent.addStretch(3)
+    testContent.addLayout(window.questionLayout)
+    window.optionLayout = qtw.QStackedLayout()
+    window.options = list()
+    for i in range(10):
+        tempWidget = qtw.QWidget()
+        tempLayout = qtw.QVBoxLayout()
+        window.options.append(list())
+        for j in range(4):
+            currentOption = qtw.QHBoxLayout()
+            currentOption.addWidget(qtw.QLabel(chr(65 + j)))
+            window.options[i].append(qtw.QTextEdit())
+            currentOption.addWidget(window.options[i][j])
+            currentOption.addStretch(1)
+            tempLayout.addLayout(currentOption)
+        tempWidget.setLayout(tempLayout)
+        window.optionLayout.addWidget(tempWidget)
+    for i in range(10):
+        tempWidget = qtw.QWidget()
+        tempLayout = qtw.QVBoxLayout()
+        window.options.append(list())
+        for j in range(4):
+            currentOption = qtw.QHBoxLayout()
+            currentOption.addWidget(qtw.QLabel(chr(65 + j)))
+            window.options[i].append(qtw.QLabel(''))
+            currentOption.addWidget(window.options[i + 10][j])
+            currentOption.addStretch(1)
+            tempLayout.addLayout(currentOption)
+        tempWidget.setLayout(tempLayout)
+        window.optionLayout.addWidget(tempWidget)
+    
     
 homepage = lambda window : window.layout.setCurrentIndex(0)
 
