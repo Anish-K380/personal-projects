@@ -215,10 +215,12 @@ def initialize(window):
     window.questionNumbers = list()
     questionNumberLayout.addStretch(3)
     for i in range(10):
-        window.questionNumbers.append(qtw.QButton(f'{i + 1}'))
+        window.questionNumbers.append(qtw.QPushButton(f'{i + 1}'))
         questionNumberLayout.addWidget(window.questionNumbers[i])
     questionNumberLayout.addStretch(7)
     testLayout.addLayout(questionNumberLayout)
+    _testContent_ = qtw.QHBoxLayout()
+    testContent_ = qtw.QVBoxLayout()
     testContent = qtw.QVBoxLayout()
     testSubmitLayout = qtw.QHBoxLayout()
     testSubmitLayout.addStretch(4)
@@ -249,7 +251,8 @@ def initialize(window):
         tempWidget.setLayout(tempLayout)
         window.questionLayout.addWidget(tempWidget)
     testContent.addStretch(3)
-    testContent.addLayout(window.questionLayout)
+    testContent_.addLayout(window.questionLayout)
+    testContent_.addStretch(1)
     window.optionLayout = qtw.QStackedLayout()
     window.options = list()
     for i in range(10):
@@ -272,13 +275,29 @@ def initialize(window):
         for j in range(4):
             currentOption = qtw.QHBoxLayout()
             currentOption.addWidget(qtw.QLabel(chr(65 + j)))
-            window.options[i].append(qtw.QLabel(''))
+            window.options[i + 10].append(qtw.QLabel(''))
             currentOption.addWidget(window.options[i + 10][j])
             currentOption.addStretch(1)
             tempLayout.addLayout(currentOption)
         tempWidget.setLayout(tempLayout)
         window.optionLayout.addWidget(tempWidget)
-    
+    testContent_.addLayout(window.optionLayout)
+    _testContent_.addStretch(1)
+    _testContent_.addLayout(testContent_)
+    _testContent_.addStretch(3)
+    testContent.addLayout(_testContent_)
+    questionNavigator = qtw.QHBoxLayout()
+    window.testPrev = qtw.QPushButton('previous')
+    window.testNext = qtw.QPushButton('next')
+    questionNavigator.addStretch(1)
+    questionNavigator.addWidget(window.testPrev)
+    questionNavigator.addStretch(4)
+    questionNavigator.addWidget(window.testNext)
+    questionNavigator.addStretch(2)
+    testContent.addStretch(4)
+    testContent.addLayout(questionNavigator)
+    testLayout.addLayout(testContent)
+    window.layout.addWidget(testWidget)
     
 homepage = lambda window : window.layout.setCurrentIndex(0)
 
@@ -344,18 +363,17 @@ def loggedInPage(window):
     window.layout.setCurrentIndex(3)
 
 def makeTest(window):
-    window.questionNumber.setText('1)')
-    window.questionEdit.setPlainText('')
-    window.questionLayout.setCurrentIndex(0)
-    window.optionAEdit.setPlainText('')
-    window.optionBEdit.setPlainText('')
-    window.optionCEdit.setPlainText('')
-    window.optionDEdit.setPlainText('')
-    window.optionALayout.setCurrentIndex(0)
-    window.optionBLayout.setCurrentIndex(0)
-    window.optionCLayout.setCurrentIndex(0)
-    window.optionDLayout.setCurrentIndex(0)
+    for i in range(10):
+        window.questions[i].setPlainText('')
+        for j in range(4):
+            window.options[i][j].setPlainText('')
+    readyPage(0)
     window.layout.setCurrentIndex(4)
+
+def readyPage(pageNo):
+    mode = pageNo // 10
+    pageNo %= 10
+    if pageNo == 0:pass
 
 credentials = list()
 topics = list()
