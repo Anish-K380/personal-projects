@@ -217,15 +217,27 @@ def initialize(window):
     for i in range(10):
         window.questionNumbers.append(qtw.QPushButton(f'{i + 1}'))
         questionNumberLayout.addWidget(window.questionNumbers[i])
-    questionNumberLayout.addStretch(7)
+    questionNumberLayout.addStretch(3)
+    titleLayout = qtw.QHBoxLayout()
+    titleLayout.addWidget(qtw.QLabel('Title:'))
+    window.title = qtw.QLineEdit()
+    titleLayout.addWidget(window.title)
+    questionNumberLayout.addLayout(titleLayout)
+    questionNumberLayout.addStretch(1)
+    window.testEditEmptyError = qtw.QLabel('')
+    window.testEditButton = qtw.QPushButton('OK')
+    window.testEditButton.clicked.connect(partial(hideTestError, window))
+    questionNumberLayout.addWidget(window.testEditEmptyError)
+    questionNumberLayout.addWidget(window.testEditButton)
     testLayout.addLayout(questionNumberLayout)
     _testContent_ = qtw.QHBoxLayout()
     testContent_ = qtw.QVBoxLayout()
     testContent = qtw.QVBoxLayout()
     testSubmitLayout = qtw.QHBoxLayout()
     testSubmitLayout.addStretch(4)
-    testSubmit = qtw.QPushButton('Submit')
-    testSubmitLayout.addWidget(testSubmit)
+    window.testSubmit = qtw.QPushButton('Submit')
+    window.testSubmit.clicked.connect(lambda : None)
+    testSubmitLayout.addWidget(window.testSubmit)
     testSubmitLayout.addStretch(1)
     testContent.addStretch(2)
     testContent.addLayout(testSubmitLayout)
@@ -288,15 +300,17 @@ def initialize(window):
     testContent.addLayout(_testContent_)
     questionNavigator = qtw.QHBoxLayout()
     window.testPrev = qtw.QPushButton('previous')
+    window.testPrev.clicked.connect(lambda : None)
     window.testNext = qtw.QPushButton('next')
+    window.testNext.clicked.connect(lambda : None)
     questionNavigator.addStretch(1)
     questionNavigator.addWidget(window.testPrev)
     questionNavigator.addStretch(4)
     questionNavigator.addWidget(window.testNext)
     questionNavigator.addStretch(2)
-    testContent.addStretch(4)
-    testContent.addLayout(questionNavigator)
-    testLayout.addLayout(testContent)
+    testContent.addStretch(3)
+    testContent.addLayout(questionNavigator, stretch = 1)
+    testLayout.addLayout(testContent, stretch = 4)
     window.layout.addWidget(testWidget)
     
 homepage = lambda window : window.layout.setCurrentIndex(0)
@@ -363,18 +377,48 @@ def loggedInPage(window):
     window.layout.setCurrentIndex(3)
 
 def makeTest(window):
+    hideTestError(window)
+    window.testSubmit.clicked.disconnect()
+    window.testSubmit.clicked.connect(partial(testEditSubmit, window))
     for i in range(10):
         window.questions[i].setPlainText('')
         for j in range(4):
             window.options[i][j].setPlainText('')
-    readyPage(0)
+        window.questionNumbers[i].clicked.connect(partial(readyPage, window, i))
+    window.title.show()
+    readyPage(window, 0)
     window.layout.setCurrentIndex(4)
 
-def readyPage(pageNo):
+def readyPage(window, pageNo):
     mode = pageNo // 10
-    pageNo %= 10
-    if pageNo == 0:pass
+    page = pageNo % 10
+    window.testPrev.clicked.disconnect()
+    window.testNext.clicked.disconnect()
+    window.testPrev.clicked.connect(partial(readyPage, window, pageNo - 1))
+    window.testNext.clicked.connect(partial(readyPage, window, pageNo + 1))
+    if page == 0:window.testPrev.hide()
+    else:window.testPrev.show()
+    if page == 9:window.testNext.hide()
+    else:window.testNext.show()
+    window.questionLayout.setCurrentIndex(pageNo)
+    window.optionLayout.setCurrentIndex(pageNo)
 
+def hideTestError(window):
+    window.testEditEmptyError.hide()
+    window.testEditButton.hide()
+    
+def testEditSubmit(window):
+    data = list()
+    for i in range(10):
+        data.append(window.questions[i].toPlainText())
+        if len(data[i * 5]) == 0:
+            window.testEditEmptyError.setText('Fill question!')
+            window.testEditEmptyError.show()
+            window.testEditButton.show()
+            readyPage(window, i)
+            return None
+        data.extend([1,2,3,4])
+    
 credentials = list()
 topics = list()
 refresh()
