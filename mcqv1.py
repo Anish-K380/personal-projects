@@ -213,7 +213,11 @@ def initialize(window):
     testWidget.setLayout(testLayout)
     questionNumberLayout = qtw.QVBoxLayout()
     window.questionNumbers = list()
-    questionNumberLayout.addStretch(3)
+    questionNumberLayout.addStretch(1)
+    testReturnButton = qtw.QPushButton('<--')
+    testReturnButton.clicked.connect(partial(loggedInPage, window))
+    questionNumberLayout.addWidget(testReturnButton)
+    questionNumberLayout.addStretch(2)
     for i in range(10):
         window.questionNumbers.append(qtw.QPushButton(f'{i + 1}'))
         questionNumberLayout.addWidget(window.questionNumbers[i])
@@ -267,12 +271,18 @@ def initialize(window):
     testContent_.addStretch(1)
     window.optionLayout = qtw.QStackedLayout()
     window.options = list()
+    window.optionSelect = list()
     for i in range(10):
         tempWidget = qtw.QWidget()
         tempLayout = qtw.QVBoxLayout()
         window.options.append(list())
+        window.optionSelect.append(list())
+        tempTestGroup = qtw.QButtonGroup()
         for j in range(4):
             currentOption = qtw.QHBoxLayout()
+            window.optionSelect[i].append(qtw.QRadioButton())
+            tempTestGroup.addButton(window.optionSelect[i][j])
+            currentOption.addWidget(window.optionSelect[i][j])
             currentOption.addWidget(qtw.QLabel(chr(65 + j)))
             window.options[i].append(qtw.QTextEdit())
             currentOption.addWidget(window.options[i][j])
@@ -284,8 +294,13 @@ def initialize(window):
         tempWidget = qtw.QWidget()
         tempLayout = qtw.QVBoxLayout()
         window.options.append(list())
+        window.optionSelect.append(list())
+        tempTestGroup = qtw.QButtonGroup()
         for j in range(4):
             currentOption = qtw.QHBoxLayout()
+            window.optionSelect[i + 10].append(qtw.QRadioButton())
+            tempTestGroup.addButton(window.optionSelect[i + 10][j])
+            currentOption.addWidget(window.optionSelect[i + 10][j])
             currentOption.addWidget(qtw.QLabel(chr(65 + j)))
             window.options[i + 10].append(qtw.QLabel(''))
             currentOption.addWidget(window.options[i + 10][j])
@@ -312,6 +327,22 @@ def initialize(window):
     testContent.addLayout(questionNavigator, stretch = 1)
     testLayout.addLayout(testContent, stretch = 4)
     window.layout.addWidget(testWidget)
+
+    testConfirmationWidget = qtw.QWidget()
+    testConfirmationLayout = qtw.QHBoxLayout()
+    testConfirmationLayout_ = qtw.QVBoxLayout()
+    testConfirmationLayout.addStretch(1)
+    testConfirmationLayout_.addStretch(1)
+    window.testConfirmation = qtw.QLabel('')
+    testConfirmationButton = qtw.QPushButton('OK')
+    testConfirmationButton.clicked.connect(partial(loggedInPage, window))
+    testConfirmationLayout_.addWidget(window.testConfirmation)
+    testConfirmationLayout_.addWidget(testConfirmationButton)
+    testConfirmationLayout_.addStretch(1)
+    testConfirmationLayout.addLayout(testConfirmationLayout_)
+    testConfirmationLayout.addStretch(1)
+    testConfirmationWidget.setLayout(testConfirmationLayout)
+    window.layout.addWidget(testConfirmationWidget)
     
 homepage = lambda window : window.layout.setCurrentIndex(0)
 
@@ -328,8 +359,8 @@ def teacher_login(window):
 def refresh():
     credentials.append({'Developer' : 'password'})
     credentials.append({'Developer' : 'password'})
-    topics.append('Stars and Galaxies')
-    topics.append('topic 2')
+    topics.add('Stars and Galaxies')
+    topics.add('topic 2')
 
 def login_submit(user_id_obj, password_obj, window):
     user_id = user_id_obj.text()
@@ -382,6 +413,7 @@ def makeTest(window):
     window.testSubmit.clicked.connect(partial(testEditSubmit, window))
     for i in range(10):
         window.questions[i].setPlainText('')
+        window.optionSelect[i][0].setChecked(True)
         for j in range(4):
             window.options[i][j].setPlainText('')
         window.questionNumbers[i].clicked.connect(partial(readyPage, window, i))
@@ -417,10 +449,29 @@ def testEditSubmit(window):
             window.testEditButton.show()
             readyPage(window, i)
             return None
-        data.extend([1,2,3,4])
-    
+        temp = {0, 1, 2, 3}
+        for j in range(4):
+            if window.optionSelect[i][j].isChecked():
+                temp.remove(j)
+                data.append(window.options[i][j].toPlainText())
+                break
+        for j in temp:data.append(window.options[i][j].toPlainText())
+    data.append(window.title.text())
+    if data[50] in topics:
+        window.testEditEmptyError.setText('Topic name already exists')
+        window.testEditEmptyError.show()
+        window.testEditButton.show()
+        return 0
+    topics.add(data[50])
+    with open(path + 'topicsK380.txt', 'w') as file:
+        for i in topics:file.writelines(i, '\n')
+    with open(path + f'{data[50]}.txt', 'w') as file:
+        data.pop()
+        file.writelines('\n'.join(data))
+
+path = '/home/anish/Downloads/' 
 credentials = list()
-topics = list()
+topics = set()
 refresh()
 app = qtw.QApplication([])
 window = MainWindow()
