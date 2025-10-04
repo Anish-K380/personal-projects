@@ -220,12 +220,17 @@ def initialize(window):
     questionNumberLayout.addStretch(2)
     for i in range(10):
         window.questionNumbers.append(qtw.QPushButton(f'{i + 1}'))
+        window.questionNumbers[i].clicked.connect(lambda : None)
         questionNumberLayout.addWidget(window.questionNumbers[i])
     questionNumberLayout.addStretch(3)
     titleLayout = qtw.QHBoxLayout()
     titleLayout.addWidget(qtw.QLabel('Title:'))
-    window.title = qtw.QLineEdit()
-    titleLayout.addWidget(window.title)
+    window.title = qtw.QStackedLayout()
+    window.titleEdit = qtw.QLineEdit()
+    window.title.addWidget(window.titleEdit)
+    window.titleText = qtw.QLabel('')
+    window.title.addWidget(window.titleText)
+    titleLayout.addLayout(window.title)
     questionNumberLayout.addLayout(titleLayout)
     questionNumberLayout.addStretch(1)
     window.testEditEmptyError = qtw.QLabel('')
@@ -416,11 +421,29 @@ def makeTest(window):
         window.optionSelect[i][0].setChecked(True)
         for j in range(4):
             window.options[i][j].setPlainText('')
+        window.questionNumbers[i].clicked.disconnect()
         window.questionNumbers[i].clicked.connect(partial(readyPage, window, i))
-    window.title.show()
+    window.title.setCurrentIndex(0)
+    window.titleEdit.setText('')
     readyPage(window, 0)
     window.layout.setCurrentIndex(4)
 
+def alterTest(topic, window):
+    hideTestError(window)
+    window.testSubmit.clicked.disconnect()
+    window.testSubmit.clicked.connect(partial(testEditSubmit, window))
+    with open(path + topic + '.txt', 'r') as file:
+        data = file.read().split('\n')
+    for i in range(10):
+        window.questions[i].setPlainText(data[i * 5])
+        window.optionSelection[i][0].setChecked(True)
+        for j in range(4):
+            window.options[i][j].setPlainText(data[i * 5 + j])
+        window.questionNumbers[i].clicked.disconnect()
+        window.questionNumbers[i].clicked.connect(partial(readyPage, window, i))
+    window.title.setCurrentIndex(0)
+    window.titleEdit.setText(topic)
+    
 def readyPage(window, pageNo):
     mode = pageNo // 10
     page = pageNo % 10
@@ -467,7 +490,7 @@ def testEditSubmit(window):
         for i in topics:file.writelines(i, '\n')
     with open(path + f'{data[50]}.txt', 'w') as file:
         data.pop()
-        file.writelines('\n'.join(data))
+        file.writeline('\n'.join(data))
 
 path = '/home/anish/Downloads/' 
 credentials = list()
