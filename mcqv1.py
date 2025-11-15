@@ -479,18 +479,28 @@ def testEditSubmit(window):
                 data.append(window.options[i][j].toPlainText())
                 break
         for j in temp:data.append(window.options[i][j].toPlainText())
-    data.append(window.title.text())
+    data.append(window.titleEdit.text())
+    if len(data[50]) == 0:
+        window.testEditEmptyError.setText('Enter topic name!')
+        window.testEditEmptyError.show()
+        window.testEditButton.show()
+        return 0
     if data[50] in topics:
-        window.testEditEmptyError.setText('Topic name already exists')
+        window.testEditEmptyError.setText('Topic name already exists!')
         window.testEditEmptyError.show()
         window.testEditButton.show()
         return 0
     topics.add(data[50])
-    with open(path + 'topicsK380.txt', 'w') as file:
-        for i in topics:file.writelines(i, '\n')
-    with open(path + f'{data[50]}.txt', 'w') as file:
+    with open(path + 'mcqTopicsK380.txt', 'w') as file:
+        for i in topics:file.writelines((i, '\n'))
+    with open(path + f'mcq{data[50]}.txt', 'w') as file:
         data.pop()
-        file.writeline('\n'.join(data))
+        file.write('\n'.join(data))
+    editTestFeedback(window)
+
+def editTestFeedback(window):
+    window.testConfirmation.setText('Test added successfully')
+    window.layout.setCurrentIndex(5)
 
 path = '/home/anish/Downloads/' 
 credentials = list()
