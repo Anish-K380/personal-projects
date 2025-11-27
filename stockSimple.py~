@@ -1,0 +1,10 @@
+import csv
+import datetime
+
+class Stock:
+    def __init__(self):
+        self.name = input('Enter ticker of stock:')
+        self.company = input('Enter company of stock:')
+
+a = datetime.date(2005)
+print(a.year)

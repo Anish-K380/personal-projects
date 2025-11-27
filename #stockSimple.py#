@@ -1,0 +1,35 @@
+import csv
+from datetime import date
+from collections import deque
+
+class Stock:
+    def __init__(self):
+        self.name = input('Enter ticker of stock:')
+        self.company = input('Enter company of stock:')
+        self.startDate = date.today()
+        self.prices = deque()
+
+    def changeStartDate(self):
+        dateInput = tuple(map(int, input('Enter new date in format of dd.mm.yyyy:').split('.')))
+        newDate = date(dateInput.year, dateInput.month, dateInput.day)
+        difference = (self.startDate - newDate).days
+        if len(self.prices) == 0:
+            default = 0
+        else:
+            default = prices[0]
+        while difference > 0:
+            self.prices.appendleft(default)
+            difference -= 1
+        difference *= -1
+        if difference >= len(prices):
+            self.prices = deque()
+        else:
+            while difference > 0:
+                self.prices.popleft()
+                difference -= 1
+        self.startDate = newDate
+
+    def changeDatePrice(self):
+        dateInput = tuple(map(int, input('Enter date in format of dd.mm.yyyy:').split('.')))
+
+test = 
