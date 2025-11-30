@@ -40,7 +40,7 @@ class Stock:
             self.prices = deque((0,))
         difference = (self.endDate - newDate).days
         default = self.prices[-1]
-        if difference >= len(prices):
+        if difference >= len(self.prices):
             self.startDate = newDate
             self.prices = deque((0,))
             difference = 0
@@ -67,5 +67,5 @@ class Stock:
             self.prices[i] = float(input((self.startDate + timedelta(days = i)).strftime('%d.%m.%Y :')))
     
 def dateInput(message):
-    dateTuple = tuple(map(int, input(message).split('.')))
-    return date(dateTuple[2], dateTuple[1], dateTuple[0])
+    year, month, day = tuple(map(int, input(message).split('.')))
+    return date(day, month, year)
