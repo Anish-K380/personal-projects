@@ -166,7 +166,3 @@ with open(path + 'stockList.txt', 'r') as file:
         store[serial] = (name, isin)
         serial += 1
 loadOptions()
-
-tata = load(4)
-tata.details()
-tata.visualize()
