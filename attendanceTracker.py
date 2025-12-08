@@ -60,6 +60,7 @@ class Classroom:
         self.section = section
         self.classTeacher = None
         self.studentList = set()
+        self.attendance = dict()
 
     def setClassTeacher(self):
         self.classTeacher = input('Enter class teacher:')
@@ -73,6 +74,9 @@ class Classroom:
     def viewStudents(self, sManager):
         for roll in self.studentList:
             sManager.getStudent(roll)
+
+    def createAttendance(self, date):
+        self.attendance[date] = dict.fromkeys(self.studentList, True)
 
 class StudentManager:
 
@@ -136,6 +140,14 @@ class StudentManager:
                 student.alterSection()
                 bManager.manage(student.branch, student.section, student.rollNo)
 
+    def removeStudent(self, rollNo, bManager):
+        if rollNo not in self.studentList:
+            print('Roll number doesn\'t exist.')
+        student = self.studentList[rollNo]
+        self.names.remove(rollNo)
+        branch = bManager.accessBranch[student.branch]
+        branch.accessClass[student.section].removeStudent(rollNo)
+        branch.removeStudent(rollNo)
 
 class BranchManager:
 
@@ -159,5 +171,96 @@ class BranchManager:
 
 class Attendance:
 
-    def __init__(self):
-        self.
+    def markAttendance(self, date, classroom, sManager):
+        if date in classroom.attendance:
+            print('Record already exists.')
+            return
+        classroom.createAttendance(date)
+        print('Enter a or A to mark absent. Leaving empty or other keys will be marked as present.')
+        for i in classroom.studentList:
+            student = sManager.studentList[i]
+            if input(f'{student.name} : {student.rollNo} :').lower() == 'a':
+                classroom.attendance[date][student.rollNo] = False
+
+    def viewAttendance(self, date, classroom, sManager):
+        conversion = {True : 'Present', False : 'Absent'}
+        if date not in classroom.attendance:
+            print('Record doesn\'t exist.')
+            return
+        print(date)
+        for i in classroom.attendance[date]:
+            student = sManager.studentList[i]
+            print(f'{student.name} : {student.rollNo} : {conversion[classroom.attendance[date][i]]}')
+
+class Institution:
+
+    sManager = StudentManager()
+    bManager = BranchManager()
+    attendance = Attendance()
+    while True:
+        print('1. Mark attendance')
+        print('2. View attendance')
+        print('3. Add student')
+        print('4. Alter student')
+        print('5. Remove student')
+
+        choice = int(input('Enter choice:'))
+        if choice == 1:
+            date = input('Enter date in format (dd.mm.yyyy):')
+            branch = input('Enter branch:')
+            if branch not in bManager.branchList:
+                print('Branch doesn\'t exist.')
+                continue
+            branch = bManager.branchList[branch]
+            section = input('Enter section:')
+            if section not in branch.sections:
+                print('Section doesn\'t exist.')
+                continue
+            section = branch.sections[section]
+            attendance.markAttendance(date, section, sManager)
+        
+        elif choice == 2:
+            date = input('Enter date in format (dd.mm.yyyy):')
+            branch = input('Enter branch:')
+            if branch not in bManager.branchList:
+                print('Branch doesn\'t exist.')
+                continue
+            branch = bManager.branchList[branch]
+            section = input('Enter section:')
+            if section not in branch.sections:
+                print('Section doesn\'t exist.')
+                continue
+            section = branch.sections[section]
+            attendance.viewAttendance(date, section, sManager)
+
+        elif choice == 3:
+            sManager.create(bManager)
+
+        elif choice == 4:
+            rollNo = int(input('Enter roll number of student:'))
+            if rollNo not in sManager.studentList:
+                print('Roll number doesn\'t exist.')
+                continue
+            print('1. Alter name')
+            print('2. Alter section')
+            print('3. Alter branch')
+            subChoice = int(input('Enter choice:'))
+
+            if subChoice == 1:
+                sManager.alterName(rollNo)
+
+            elif subChoice == 2:
+                sManager.alterSection(rollNo, bManager)
+            
+            elif subChoice == 3:
+                sManager.alterBranch(rollNo, bManager)
+
+            else:
+                print('Incorrect choice selected.')
+
+        elif choice == 5:
+            rollNo = int(input('Enter roll number of student:'))
+            if rollNo not in sManager.studentList:
+                print('Roll number doesn\'t exist.')
+                continue
+            sManager.removeStudent(rollNo, bManager)
