@@ -22,7 +22,7 @@ def createPassword(lowerLimit, upperLimit, uppercase, symbols, numeric, space):
 
 def password():
     print('1. Enter your own password:')
-    print('2. Create your own password:')
+    print('2. Create a random password:')
     choice = input('Enter choice:')
     if choice == '1':
         password = input('Enter password:')
@@ -51,7 +51,7 @@ def randomPassword():
     space = True
     if input('Do you want to include space? (Y/N):').lower() == 'n':
         space = False
-    return createPassword(lower, upper, uppercase, symbol, number, space)
+    return createPassword(int(lower), int(upper), uppercase, symbol, number, space)
         
 def credential():
     portal = input('Enter portal:')
@@ -70,18 +70,18 @@ def load():
         credentialText = file.read().splitlines()
         index = 0
         while index < len(credentialText):
-            if credentialText[i] == '':
+            if credentialText[index] == '':
                 index += 1
                 continue
-            credentials[credentialText[i]] = (credentialText[i + 1], credentialText[i + 2])
-            i += 3
+            credentials[credentialText[index]] = (credentialText[index + 1], credentialText[index + 2])
+            index += 3
 
 def save():
-    with open('/home/anish/pyFie/credentials.txt', 'a') as file:
+    with open('/home/anish/pyFile/credentials.txt', 'w') as file:
         for i in credentials:
             file.write('\n')
             file.write(i)
-            file.wrwite('\n')
+            file.write('\n')
             file.write(credentials[i][0])
             file.write('\n')
             file.write(credentials[i][1])
@@ -112,9 +112,8 @@ while True:
     print('2. Store credentials')
     print('3. Retrieve credentials')
     print('4. View all credentials')
-    print('5. Save')
-    print('6. Save and quit.')
-    print('7. Quit')
+    print('5. Save and quit.')
+    print('6. Quit')
     choice = input('Enter choice:')
     if choice == '1':
         randomPassword()
@@ -126,10 +125,8 @@ while True:
         allCredentials()
     elif choice == '5':
         save()
-    elif choice == '6':
-        save()
         break
-    elif choice == '7':
+    elif choice == '6':
         break
     else:
         print('Invalid choice')
