@@ -77,7 +77,7 @@ def load():
             index += 3
 
 def save():
-    with open('/home/anish/pyFile/credentials.txt', 'w') as file:
+    with open('', 'w') as file:
         for i in credentials:
             file.write('\n')
             file.write(i)
